@@ -1,4 +1,4 @@
-%% store paths to data directories and copy necessary files
+%% organizes the data for the prediction project into mat files, which are then fed into the SVM
 % before this runs you need to copy the regsiter.dat file form
 % FreesurferSegmentations/subject/labels to
 % FreesurferSegmentations/subject/surf

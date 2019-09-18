@@ -1,4 +1,6 @@
 function lossvalue=lossfuncDC(Y,Sfit,W,cost)
+% this function computes 1-DC, comparing predicted roi vertices with actual
+% vertices
 
 actualROIVertices=Y(:,2);
 
