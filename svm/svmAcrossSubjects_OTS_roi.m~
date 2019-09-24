@@ -114,7 +114,7 @@ for r=1:length(ROIs)
         
         %save prediction as mat file
         cd(outFolder);
-        save(strcat('Subject_',num2str(subjectToPredict(1)),'_',ROIs{r},'_',svmParams.KernelFunction,'_',strcat(svmParams.predictors{:})),...
+        save(strcat('Subject_',num2str(subjectToPredict(1)),'_',svmParams.KernelFunction,','_',ROIs{r},'_output_',strcat(predictors{:})),...
         'svmParams','SVMModelRead','readLabelBinary','readScore','DC','responseRead');
     end
 end

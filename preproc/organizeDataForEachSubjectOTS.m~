@@ -25,16 +25,12 @@ maps={'roi_OTS_reading_vs_all' '01_adding_vs_all' '02_reading_vs_all' '03_T1_in_
 outFolder=fullfile('/share/kalanit/biac2/kgs/projects/PredictFuncFromStruct/PredictMatrixes');
 output=[];
 
-%     if exist(outFolder)
-%     cmdstr=['rm -r ' outFolder]
-%     system(cmdstr)
-%     end
-%     
-%     cmdstr=['mkdir ' outFolder]
-%     system(cmdstr)
-
 for s=[1 3:9 11:12 14]
-
+    
+    if exist(outFolder)
+    cmdstr=['rm -r ' outfolder]
+    end
+     
     labelfolder=fullfile(fsfolder, fs_ids{s}, 'label/aparc2009/predictFuncFromStructBoundaries')
     cd(labelfolder)
     
@@ -82,7 +78,7 @@ for s=[1 3:9 11:12 14]
     end
     
     cd(outFolder)
-    save(strcat('Subject_',num2str(s),'_','lh_OTS_anat_roi.mat'),...
+    save(strcat('Subject_',num2str(s),'_','lh_OTS_anat_roi_SmallM.mat'),...
         'roiRead','responseMath','responseRead','predictorsT','predictorsA');
     clear('responseMath','responseRead','roiRead','predictorsT','predictorsA','vol');
     

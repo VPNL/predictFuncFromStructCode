@@ -17,11 +17,12 @@ mkdir(outDir);
 cd(outDir);
 
 ROIs={'lh_OTS_anat'}
-for s=[1,3,4,5,6,7,8,9]
+for s=[1,3,4,6,7,8,9]
 for r=1:length(ROIs)
 label_command = [':label=./label/aparc2009/predictFuncFromStructBoundaries/' strcat(ROIs{r},'.label') ':label_color=black:label_outline=1',...
-        ':label=./label/aparc2009/predictFuncFromStructBoundaries/' strcat(ROIs{r},'_roi_Poly_new_readPredicted.label') ':label_color=green:label_outline=1'];
-fs_loadFreeview(fs_ids{s},'lh','vl','02_reading_vs_all_lh_proj_max.mgh',0,[3,10],2,true,label_command)
+        ':label=./label/aparc2009/predictFuncFromStructROIs/' strcat('lh_mOTS_morphing_reading_vs_all_proj_max.label') ':label_color=green:label_outline=1',...
+        ':label=./label/aparc2009/predictFuncFromStructBoundaries/' strcat(ROIs{r},'_Poly_new_readPredicted.label') ':label_color=yellow:label_outline=0'];
+fs_loadFreeview(fs_ids{s},'lh','vl','02_reading_vs_all_lh_proj_max.mgh',0,[100,100],2,true,label_command)
 
 end
 end

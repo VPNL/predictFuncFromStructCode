@@ -1,0 +1,90 @@
+clear all;
+cd(fullfile('/share/kalanit/biac2/kgs/projects/PredictFuncFromStruct/PredictMatrixes'));
+ROIs={'lh_OTS_anat_roi_SmallMT1'};
+
+modelParams={};
+modelParams.KernelFunction='rbf';
+modelParams.KernelScale=10;
+modelParams.Standardize='false';
+modelPsrams.Prior='uniform';
+modelParams.BoxContraint=1;
+modelParams.PolynomialOrder=[];
+modelParams.predictors={'ILF' 'AF' 'pAF'};
+
+subjects=[1 3:9 11:12 14]
+for r=1:length(ROIs)
+    for subjectToPredict=[1 3:9 11:12 14]
+        subjectsForPrediction=subjects(subjects~=subjectToPredict);
+        
+        currentSubject=subjectToPredict;
+        % concat response and predictor matrixes for all N expect 1
+        for i=1:length(subjectsForPrediction)
+            load(strcat('Subject_',num2str(subjectsForPrediction(i)),'_',ROIs{r}));
+            individualsPredictors=predictorsT(:,predictors);
+            individualsResponseRead=roiRead;
+            if i==1
+                predictorsMinus1=individualsPredictors;
+                responseReadMinus1=roiRead;
+            else
+                predictorsMinus1=vertcat(predictorsMinus1, individualsPredictors);
+                responseReadMinus1=vertcat(responseReadMinus1, individualsResponseRead);
+                clear('individualsPredictorA','individualsResponseMath','individualReponseRead','predictorsA', 'predictorsA_zS', 'predictorsT','predictorsT_zS','responseMath', 'responseRead');
+                
+            end
+        end
+        
+        indicesReadBelowTresh = find(responseReadMinus1==0);
+        indicesReadAboveTresh = find(responseReadMinus1==1);
+        
+        responseReadTraining=cell(size(responseReadMinus1));
+        
+        clear 'responseReadBinary'
+        responseReadBinary(:,2)=zeros(size(responseReadMinus1));
+        
+        className1='BelowTresh';
+        className2='AboveTresh';
+        responseReadTraining(indicesReadBelowTresh)  ={className1};
+        responseReadTraining(indicesReadAboveTresh) = {className2};
+        responseReadBinary((indicesReadBelowTresh),1)=1;
+        responseReadBinary((indicesReadAboveTresh),2)=1;
+        
+        % fit svm from concatenated and tresholded responses
+        SVMModelRead = fitcsvm(predictorsMinus1,responseReadTraining,...
+            'KernelFunction',modelParams.KernelFunction,... %which kernel to use %rbf or poly seem to work well
+            'KernelScale',modelParams.KernelFunction,... % the size of the kernel
+            'Standardize',,... %standardize the predictor variables
+            'Prior','uniform',... This weights things correctly
+            'BoxConstraint',1,... %how much error does the model allow
+            'ClassNames',{className1,className2},...
+            'Solver','L1Qp'); %this is what matlab recommends
+        
+        %ScoreSVMModelRead = fitPosterior(SVMModelRead,predictorsMinus1,responseReadTraining);
+        
+        %load predictors for left out subject and predict responses
+        load(strcat('Subject_',num2str(subjectToPredict),'_',ROIs{r}));
+        predictorsSubjectToPredict=predictorsT_zS(:,predictors);
+        
+        [readLabel,readScore]=predict(SVMModelRead,predictorsSubjectToPredict);
+        % [readLabel,readScore]=predict(ScoreSVMModelRead,predictorsA_zS);
+        
+        clear readLabelBinary; %convert predictions to binary label
+        for l=1:length(readLabel)
+            if strcmp(readLabel{l},className1)>0
+                readLabelBinary(l,1)=0;
+            else
+                readLabelBinary(l,1)=1;
+            end
+        end
+        
+        actualROIVertices=roiRead(:,1);
+        predictedROIVertices=readLabelBinary(:,1);
+        
+        correctPredictions=(predictedROIVertices>0 & actualROIVertices>0);
+        
+        DC=2*(sum(correctPredictions))/(sum(actualROIVertices)+sum(predictedROIVertices))
+        DCs(subjectToPredict)=DC;
+        
+        %save prediction as mat file
+        save(strcat('RBF_Subject_',num2str(subjectToPredict(1)),'_',ROIs{r},'_output_',strcat(predictors{:}),' predictorsSubjectToPredict','responseRead','predictorsT','readScore','readLabelBinary');
+    end
+end

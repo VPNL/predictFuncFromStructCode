@@ -44,10 +44,10 @@ sessions={'01_sc_morphing_112116' '02_at_morphing_102116' '03_as_morphing_112616
 
 % avt kalanit swaroop 
 
-map_names = {'04_WholeBrainFG_track_'};
-for track =[1 3 5 6 7 9 10 11 13 15 17 19 21 23]
+map_names = {'04_OTS_anat_FG_track_'};
+for tract =[1 3 5 6 7 9 10 11 13 15 17 19 21 23]
 % loop through sessions and transform maps to fsaverage surfaces using CBA
-for ss = [1]
+for ss = [11:12 14]
     anat_id = anat_ids{ss}; fs_id = fs_ids{ss}; ret_session = sessions{ss};
     % path to subject data in 3Danat
     anat_dir = fullfile(RAID, '3Danat', anat_id);
@@ -62,14 +62,14 @@ for ss = [1]
     
     for hem=1:2
         for mm = 1:length(map_names)
-            if track==5
-            map_name = strcat(map_names{mm}, num2str(track));
-            elseif track==6
-            map_name = strcat(map_names{mm}, num2str(track));
+            if tract==5
+            map_name = strcat(map_names{mm}, num2str(tract));
+            elseif tract==6
+            map_name = strcat(map_names{mm}, num2str(tract));
             elseif hem==1 
-            map_name = strcat(map_names{mm}, num2str(track));
+            map_name = strcat(map_names{mm}, num2str(tract));
             elseif hem==2
-            map_name = strcat(map_names{mm}, num2str(track+1));
+            map_name = strcat(map_names{mm}, num2str(tract+1));
             end
             
             map_path = fullfile(track_dir, [map_name '_resliced.nii.gz']);
