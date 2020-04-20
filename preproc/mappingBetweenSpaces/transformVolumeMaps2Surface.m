@@ -1,0 +1,83 @@
+%% store paths to data directories and copy necessary files
+% before this runs you need to copy the regsiter.dat file form
+% FreesurferSegmentations/subject/labels to
+% FreesurferSegmentations/subject/surf
+
+
+anat_ids = {'siobhan' 'avt' 'anthony_new_recon_2017'...
+    'kalanit_new_recon_2017' 'mareike' 'jesse_new_recon_2017'...
+    'brianna' 'swaroop' 'eshed'...
+    'richard' 'cody' 'marisa'...
+    'kari' 'alexis' 'nathan'...
+    'dawn' 'erica' 'th'...
+    'ek' 'gm' 'bl'...
+    'mw' 'jk' 'pe'...
+    'ie' 'pw' 'ks' ...
+    'mz' 'mm' 'ans'};
+
+fs_ids = {'siobhan' 'avt' 'anthony_new_recon_2017'...
+    'kalanit_new_recon_2017' 'mareike' 'jesse_new_recon_2017'...
+    'brianna' 'swaroop' 'eshed'...
+    'richard' 'cody' 'marisa'...
+    'kari' 'alexis' 'nathan'...
+    'dawn' 'erica' 'th'...
+    'ek' 'gm' 'bl'...
+    'mw' 'jk' 'pe'...
+    'ie' 'pw' 'ks' ...
+    'mz' 'mm' 'ans'};
+
+ RAID=['/sni-storage/kalanit/biac2/kgs'];
+ 
+fsa_dir = fullfile(RAID, '3Danat', 'FreesurferSegmentations', 'fsaverage-bkup');
+
+% avt kalanit swaroop 
+
+map_name = {'Group_02_reading_vs_all_resliced_affine_without_Subject_'};
+
+% loop through sessions and transform maps to fsaverage surfaces using CBA
+for ss = 16:30%1:30 %the output subject
+    for s=1:30%:30 %the left out subject
+    anat_id = anat_ids{ss}; fs_id = fs_ids{ss};
+    % path to subject data in 3Danat
+    anat_dir = fullfile(RAID, '3Danat', anat_id);
+    % path to subject data in FreesurferSegmentations
+    fs_dir = fullfile(RAID, '3Danat', 'FreesurferSegmentations', fs_id);
+    % paths to subject mri and surf directories
+    mri_dir = fullfile(fs_dir, 'mri'); surf_dir = fullfile(fs_dir, 'surf');
+    % path to subject retinotopy session
+
+    sourcepath=fullfile('/share/kalanit/biac2/kgs/projects/PredictFuncFromStruct/data4Predict/mniSpace');
+    outDir = fullfile('/share/kalanit/biac2/kgs/projects/PredictFuncFromStruct/data4Predict',strcat('Subject_', num2str(ss)),'/GrpMapsVolumeMNIInSurf/');
+    mkdir(outDir)
+    
+    inDir=fullfile('/share/kalanit/biac2/kgs/projects/PredictFuncFromStruct/data4Predict/',strcat('Subject_',num2str(ss)),'/GrpMapsVolumeMNI')
+    anatdir=fullfile('/share/kalanit/biac2/kgs/3Danat/FreesurferSegmentations',fs_ids{ss},'mri')
+    
+       cd(mri_dir);
+            unix(['mri_convert -ns 1 -odt float -rt interpolate -rl orig.mgz ' ...
+            fullfile(inDir, strcat(map_name{1},num2str(s),'.nii.gz'))...
+            ' ' fullfile(inDir, strcat(map_name{1},num2str(s),'_final.nii.gz')) ' --conform']);
+    
+    
+        % generate freesurfer-compatible surface files for each hemisphere
+        cd(surf_dir)
+        %cmdstr=['mri_convert ' fullfile(inDir, strcat(map_name{1},num2str(s),'_final.nii.gz')) ' ' fullfile(inDir, strcat(map_name{1},num2str(s),'_final.nii.gz'))]
+        %system(cmdstr)
+        proj_values=[-0.1:0.1:1];
+        for p=1:length(proj_values)
+            
+            unix(['mri_vol2surf --mov ' fullfile(inDir, strcat(map_name{1},num2str(s),'_final.nii.gz')) ...
+                ' --reg register.dat --hemi lh --interp trilin --o ' ...
+                fullfile(outDir,strcat(map_name{1},num2str(s), '_lh_proj_', num2str(proj_values(p)), '.mgh'))...
+                ' --projfrac ' num2str(proj_values(p))]); % left hemi
+        end
+        
+        cd(outDir);
+        cmd_str=['rm ' strcat(map_name{1},num2str(s), '_lh_proj_max.mgh')]
+        system(cmd_str)
+        
+        unix(['mri_concat --i ' strcat(map_name{1},num2str(s), '_lh_proj_*')...
+            ' --o ' strcat(map_name{1},num2str(s),'_lh_proj_max.mgh')...
+            ' --max']);
+    end
+end
