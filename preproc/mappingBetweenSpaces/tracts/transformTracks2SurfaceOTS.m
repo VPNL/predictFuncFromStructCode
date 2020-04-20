@@ -44,10 +44,10 @@ sessions={'01_sc_morphing_112116' '02_at_morphing_102116' '03_as_morphing_112616
 
 % avt kalanit swaroop 
 
-map_names = {'04_OTS_anat_FG_track_'};
+map_names = {'04_lh_OTS_from_fsaverage_FG_cleaner_track_'};
 for tract =[1 3 5 6 7 9 10 11 13 15 17 19 21 23]
 % loop through sessions and transform maps to fsaverage surfaces using CBA
-for ss = [11:12 14]
+for ss =1:30
     anat_id = anat_ids{ss}; fs_id = fs_ids{ss}; ret_session = sessions{ss};
     % path to subject data in 3Danat
     anat_dir = fullfile(RAID, '3Danat', anat_id);
@@ -60,7 +60,7 @@ for ss = [11:12 14]
     surf_out_dir=fullfile('/sni-storage/kalanit/biac2/kgs','projects', 'PredictFuncFromStruct', 'data4Predict', strcat('Subject_',num2str(ss)),'Surf');
     % generate parameter map files from mrVista parameter maps
     
-    for hem=1:2
+    for hem=1
         for mm = 1:length(map_names)
             if tract==5
             map_name = strcat(map_names{mm}, num2str(tract));

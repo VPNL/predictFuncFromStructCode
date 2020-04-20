@@ -13,7 +13,7 @@ anat_ids = {'siobhan' 'avt' 'anthony_new_recon_2017'...
     'ek' 'gm' 'bl'...
     'mw' 'jk' 'pe'...
     'ie' 'pw' 'ks' ...
-    'mz' 'rr' 'ans'};
+    'mz' 'mm' 'ans'};
 
 fs_ids = {'siobhan' 'avt' 'anthony_new_recon_2017'...
     'kalanit_new_recon_2017' 'mareike' 'jesse_new_recon_2017'...
@@ -24,7 +24,7 @@ fs_ids = {'siobhan' 'avt' 'anthony_new_recon_2017'...
     'ek' 'gm' 'bl'...
     'mw' 'jk' 'pe'...
     'ie' 'pw' 'ks' ...
-    'mz' 'rr' 'ans'};
+    'mz' 'mm' 'ans'};
 
 
 RAID=['/sni-storage/kalanit/biac2/kgs'];
@@ -40,16 +40,16 @@ sessions={'01_sc_morphing_112116' '02_at_morphing_102116' '03_as_morphing_112616
     '23_ek_morphing_113018' '24_gm_morphing_120618' '25_bl_morphing_122018'...
     '26_mw_morphing_031919' '27_jk_morphing_032119' '28_pe_morphing_040219'...
     '29_ie_morphing_040519' '30_pw_morphing_041119' '31_ks_morphing_041019'...
-    '32_mz_morphing_042219' '33_rr_morphing_050619' '34_ans_morphing_05072019'};
+    '32_mz_morphing_042219' '33_mm_morphing_050619' '34_ans_morphing_05072019'};
 
 % avt kalanit swaroop
 
 %ROIs = {'lh_ITG_anat' 'rh_ITG_anat' 'lh_OTS_union_morphing_reading_vs_all'};
-ROIs = {'lh_mOTS_morphing_reading_vs_all'};
+ROIs = {'lh_mOTS_morphing_reading_vs_all_disk_7mm'};
 
 
 % loop through sessions and transform maps to fsaverage surfaces using CBA
-for ss = 5:15
+for ss = 1:30
     anat_id = anat_ids{ss}; fs_id = fs_ids{ss}; ret_session = sessions{ss};
     % path to subject data in 3Danat
     anat_dir = fullfile(RAID, '3Danat', anat_id);
@@ -148,13 +148,14 @@ for ss = 5:15
             end
         end
         
-        cd(surfDir);
-        cmd_str=['rm ' strcat('roi_lh_OTS_proj_max.mgh')]
+        cd(roiDir);
+        cmd_str=['rm ' fullfile(roiDir,strcat(roi,'_proj_max.mgh'))]
         system(cmd_str)
+        
         
         cd(roiDir);
         unix(['mri_concat --i ' strcat(roi, '_proj_*')...
-            ' --o ' fullfile(surfDir,strcat('roi_OTS_reading_vs_all_lh_proj_max.mgh'))...
+            ' --o ' fullfile(roiDir,strcat(roi,'_proj_max.mgh'))...
             ' --max']);
         
     end

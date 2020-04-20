@@ -47,7 +47,7 @@ sessions={'01_sc_morphing_112116' '02_at_morphing_102116' '03_as_morphing_112616
 map_names = {'01_adding_vs_all' '02_reading_vs_all'};
 
 % loop through sessions and transform maps to fsaverage surfaces using CBA
-for ss = 3:30
+for ss = 16:30
     anat_id = anat_ids{ss}; fs_id = fs_ids{ss}; ret_session = sessions{ss};
     % path to subject data in 3Danat
     anat_dir = fullfile(RAID, '3Danat', anat_id);

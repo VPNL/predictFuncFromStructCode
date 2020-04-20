@@ -51,10 +51,10 @@ RAID=fullfile('/share/kalanit/biac2/kgs');
 cwd = pwd; fs_dir = fullfile(RAID,'3Danat', 'FreesurferSegmentations');
 % check input list and set default parameters when applicable
 numvarargs = length(varargin);
-if numvarargs > 9; error('Too many input arguements'); end
+if numvarargs > 11; error('Too many input arguements'); end
 optargs = {'fsaverage' 'lh' 'm' [] [] 1.5 'inflated' false};
 optargs(1:numvarargs) = varargin;
-[subj, hemi, vw, map_name, nsmooth, thresh, zoom, screenshot,label_command] = optargs{:};
+[subj, hemi, vw, map_name, nsmooth, thresh, zoom, screenshot,label_command,surf_command,outname] = optargs{:};
 
 %% check inputs and apply defaults for emptpy arguements
 
@@ -66,6 +66,7 @@ if isempty(hemi); hemi = 'lh'; end;
 if sum(strcmp(hemi, {'rh' 'lh'})) ~= 1
     error('hemi must be "lh" or "rh"')
 if isempty(label_command); label_command=0; end;
+if isempty(surf_command); surf_command=0; end;
 end
 % check vw setting
 if isempty(vw); vw = 'm'; end;
@@ -112,8 +113,8 @@ az = num2str(az); el = num2str(el); ro = num2str(ro);
 % create screenshot filename if necessary
 screenshot = boolean(screenshot);
 if screenshot
-    spath = fullfile(cwd, [subj '_' hemi '_' vw]);
-    if ~isempty(map_name); spath = [spath '_' map_name(1:end - 4)]; end
+    spath = fullfile(cwd, [subj '_' hemi '_' outname]);
+    %if ~isempty(map_name); spath = [spath '_' map_name(1:end - 4)]; end
     spath = [spath '.png'];
 end
 % force binary curvature map if parameter map is not loaded
@@ -122,9 +123,9 @@ if isempty(map_name)
     map_name = 'mri/aseg.mgz'; thresh = repmat(10e4, 1, 3); dummy_map = 1;
 else
     % otherwise point to parameter map in surf directory
-    map_name = ['surf/predictFuncFromStruct/' map_name]; dummy_map = 0;
+    map_name = map_name; dummy_map = 0;
     % check for parameter map file
-    if ~exist(fullfile(fs_dir, subj, map_name), 'file') > 0
+    if ~exist(fullfile(map_name), 'file') > 0
         error('map_name not found in subj surf directory');
     end
 end
@@ -145,11 +146,17 @@ surf = 'inflated';
 
 %% construct freeivew unix command
 cmd = ['freeview -f surf/' hemi '.' surf];
+
+
 if dummy_map == 0 && nsmooth > 0
     [~, ustr] = system('whoami'); ustr = ustr(1:end - 1);
     cmd = [cmd ':overlay=tmp_smooth_' ustr '.mgh:overlay_method=linear'];
 else
     cmd = [cmd ':overlay=' map_name];
+end
+
+if ischar(surf_command)
+cmd = [cmd surf_command]; 
 end
 
 if ischar(label_command)
@@ -159,7 +166,7 @@ end
 if ~isempty(ot); cmd = [cmd ':overlay_threshold=' ot]; end
 cmd = [cmd ':edgethickness=0' ':color=150,150,150' ...
     ' -cam Zoom ' zoom ' Azimuth ' az ' Elevation ' el ' Roll ' ro];
-
+% ' --colorscale'
 if screenshot; cmd = [cmd ' --screenshot ' spath]; end
 
 %% make a smoothed version of map and open in freeview

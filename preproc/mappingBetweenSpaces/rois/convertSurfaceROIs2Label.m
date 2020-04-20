@@ -45,13 +45,13 @@ sessions={'01_sc_morphing_112116' '02_at_morphing_102116' '03_as_morphing_112616
 
 annot_name = ['aparc.a2009s'];
 hems={'lh' 'rh'}
-ROIs = {'mOTS_morphing_reading_vs_all_proj_max'};
+ROIs = {'mOTS_morphing_reading_vs_all_disk_7mm_proj_max'};
 
 %average surface maps across all sessions
 cd(fullfile(RAID, '3Danat', 'FreesurferSegmentations', 'siobhan', 'label'));
 
 for r=1:length(ROIs)
-for s=1:15
+for s=1:30
     outdir=fullfile(RAID, '3Danat', 'FreesurferSegmentations', fs_ids{s}, 'label/aparc2009/predictFuncFromStructROIs')
     mkdir(outdir)
     cd(outdir)

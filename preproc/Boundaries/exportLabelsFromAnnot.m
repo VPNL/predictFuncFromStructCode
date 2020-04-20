@@ -50,7 +50,7 @@ hems={'lh' 'rh'}
 %average surface maps across all sessions
 cd(fullfile(RAID, '3Danat', 'FreesurferSegmentations', 'fsaverage-bkup', 'surf'));
 
-for s=1
+for s=16:30
     outdir=fullfile(RAID, '3Danat', 'FreesurferSegmentations', fs_ids{s}, 'label/aparc2009')
     mkdir(outdir)
     cd(outdir)

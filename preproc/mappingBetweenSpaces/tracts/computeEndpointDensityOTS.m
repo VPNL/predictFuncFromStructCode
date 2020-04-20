@@ -31,22 +31,23 @@ anatid={'siobhan' 'avt' 'anthony_new_recon_2017'...
 runName={'96dir_run1_noFW'};
 t1_name=['t1.nii.gz'];
 
-for s=[11:12 14]
+for s=1:30
     close all;
     % Ok, here we go
     
         PredictDirTracts = fullfile('/sni-storage/kalanit/biac2/kgs','projects', 'PredictFuncFromStruct', 'data4Predict', strcat('Subject_',num2str(s)),'Tracts');
-    if ~exist(PredictDirTracts)
+    
+       % cmdstr=(['rm -r ', PredictDirTracts]);
+       % system(cmdstr)
         cmdstr=(['mkdir ', PredictDirTracts]);
         system(cmdstr)
-    end
-    
+   
     PredictDirVolume = fullfile('/sni-storage/kalanit/biac2/kgs','projects', 'PredictFuncFromStruct', 'data4Predict', strcat('Subject_',num2str(s)),'Volume');
     
     % save out individual tracts
 for r=1:length(runName)
 for fiberNum=[1:21 27]
-    fgName=['lh_OTS_anat_FG_masked_classified_clean.mat']
+    fgName=['lh_OTS_from_fsaverage_manual_FG_masked_classified_cleaner.mat']
     fg=load(fullfile(fatDir,sessid{s},runName{r},'dti96trilin/fibers/afq',fgName))
     myfg = fg.fg(fiberNum); 
     
@@ -58,7 +59,7 @@ for fiberNum=[1:21 27]
         fiberNumName=24;
     end
     
-    fiberName = ['04_OTS_anat_FG_track_' num2str(fiberNumName) '.tck'];
+    fiberName = ['04_lh_OTS_from_fsaverage_FG_cleaner_track_' num2str(fiberNumName) '.tck'];
     fpn = fullfile(PredictDirTracts, fiberName);
     dr_fwWriteMrtrixTck(myfg, fpn);
 end
@@ -77,14 +78,15 @@ for r=1:length(runName)
         end
         
         t1=fullfile(fatDir,sessid{s},runName{r},'/t1/t1.nii.gz');
-        fiberName = ['04_OTS_anat_FG_track_' num2str(fiberNumName) '.tck'];
+        fiberName = ['04_lh_OTS_from_fsaverage_FG_cleaner_track_' num2str(fiberNumName) '.tck'];
         fg= fullfile(PredictDirTracts,fiberName);
-        outname = ['04_OTS_anat_FG_track_' num2str(fiberNumName) '.nii.gz'];
+        outname = ['04_lh_OTS_from_fsaverage_FG_cleaner_track_' num2str(fiberNumName) '.nii.gz'];
         outdir=fullfile(PredictDirVolume);
         
-        if ~exist(PredictDirVolume)
-        mkdir(outdir);
-        end
+       % cmdstr=(['rm -r ', PredictDirVolume]);
+       % system(cmdstr)
+        cmdstr=(['mkdir ', PredictDirVolume]);
+        system(cmdstr)
         
         output=fullfile(outdir,outname);
         bkgrnd = false;
