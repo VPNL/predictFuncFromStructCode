@@ -12,10 +12,10 @@ VOF=load('Summary_Grp1_lh_OTS_fsavg_regression_VOF')
 
 
 Rmeans=[UCI.meanR IFOF.meanR ILF.meanR AF.meanR pAF.meanR VOF.meanR]
-
+Rste=[UCI.steR IFOF.steR ILF.steR AF.steR pAF.steR VOF.steR]
 Rall=[UCI.resultsT.R IFOF.resultsT.R ILF.resultsT.R AF.resultsT.R pAF.resultsT.R VOF.resultsT.R]
 
-caption_x=['UCI';'IFO';'ILF';'AF ';'pAF';'VOF'];
+caption_x=['UCIF';'IFOF';'ILF ';'AF  ';'pAF ';'VOF '];
 fig=mybar(Rmeans,Rste,caption_x,[],[0.5 0.5 0.5],2);
 xticklabel_rotate([],45,[],'Fontsize',20,'FontWeight','bold')
 ylim([-0.15 0.3]);
